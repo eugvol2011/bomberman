@@ -15,7 +15,7 @@ Config.set('graphics', 'resizable', False)
 Config.set('graphics', 'position', 'custom')
 Config.set('graphics', 'top', 0)
 Config.set('graphics', 'left', 0)
-Config.set('graphics', 'fullscreen', False)
+Config.set('graphics', 'fullscreen', True)
 
 
 class Game(FloatLayout):
