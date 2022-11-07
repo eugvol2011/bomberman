@@ -15,13 +15,16 @@ Config.set('graphics', 'resizable', False)
 Config.set('graphics', 'position', 'custom')
 Config.set('graphics', 'top', 0)
 Config.set('graphics', 'left', 0)
-Config.set('graphics', 'fullscreen', True)
+Config.set('graphics', 'fullscreen', False)
 
 
 class Game(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.level = gen_level()
+        self.players = 1
+        if self.players == 2:
+            self.level[15][23] = 2
         self.field_width_ratio = 1
         self.cell_width = Window.width * self.field_width_ratio / len(self.level[0])
         self.cell_height = Window.height / len(self.level)
@@ -36,8 +39,11 @@ class Game(FloatLayout):
             woodenbox = Woodenbox(self, xy[0], xy[1])
             self.add_widget(woodenbox)
             self.wooden_boxes.append(woodenbox)
-        self.bomberman = Bomberman(self)
-        self.add_widget(self.bomberman)
+        self.bombermans = []
+        for xy in self.get_list_of_xy_by_value(2):
+            bomberman = Bomberman(self, xy[0], xy[1])
+            self.bombermans.append(bomberman)
+            self.add_widget(bomberman)
         Clock.schedule_interval(self.bomber_move, 0)
         self.door = None
         self.monsters = []
@@ -75,59 +81,109 @@ class Game(FloatLayout):
         text = keycode[1]
         if text in self.keys_pressed:
             self.keys_pressed.remove(text)
-        if text == 'spacebar' and self.bomberman.status == 'alive':
-            self.bomberman.put_bomb(self.bomberman.bomb_delay, self.bomberman.power)
-        self.bomberman.distance = 0
+        if text == 'spacebar' and self.bombermans[0].status == 'alive':
+            self.bombermans[0].put_bomb(self.bombermans[0].bomb_delay, self.bombermans[0].power)
+        if text == 'q' and len(self.bombermans) == 2 and self.bombermans[1].status == 'alive':
+            self.bombermans[1].put_bomb(self.bombermans[1].bomb_delay, self.bombermans[1].power)
+        self.bombermans[0].distance = 0
+        if len(self.bombermans) == 2:
+            self.bombermans[1].distance = 0
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         self.keys_pressed.add(keycode[1])
 
     def bomber_move(self, dt):
-        if self.bomberman.status == 'alive':
-            move_step = self.bomberman.speed * dt
-            self.bomberman.distance += move_step
+        if self.bombermans[0].status == 'alive':
+            move_step = self.bombermans[0].speed * dt
+            self.bombermans[0].distance += move_step
             animation_change_distance = 60
 
             if 'right' in self.keys_pressed:
-                self.object_move(self.bomberman, 'right', move_step, {1, 3, 4})
-                self.bomberman.canvas.clear()
-                self.bomberman.draw_bomberman("images/bomberman/bomberman-right-" +
-                                              str(self.bomberman.step_frame) + ".png")
-                if self.bomberman.distance >= animation_change_distance:
-                    self.bomberman.distance = 0
-                    self.bomberman.step_frame += 1
-                    if self.bomberman.step_frame == 6:
-                        self.bomberman.step_frame = 1
+                self.object_move(self.bombermans[0], 'right', move_step, {1, 3, 4})
+                self.bombermans[0].canvas.clear()
+                self.bombermans[0].draw_bomberman("images/bomberman/bomberman-right-" +
+                                                  str(self.bombermans[0].step_frame) + ".png")
+                if self.bombermans[0].distance >= animation_change_distance:
+                    self.bombermans[0].distance = 0
+                    self.bombermans[0].step_frame += 1
+                    if self.bombermans[0].step_frame == 6:
+                        self.bombermans[0].step_frame = 1
             elif 'left' in self.keys_pressed:
-                self.object_move(self.bomberman, 'left', move_step, {1, 3, 4})
-                self.bomberman.canvas.clear()
-                self.bomberman.draw_bomberman("images/bomberman/bomberman-left-" +
-                                              str(self.bomberman.step_frame) + ".png")
-                if self.bomberman.distance >= animation_change_distance:
-                    self.bomberman.distance = 0
-                    self.bomberman.step_frame += 1
-                    if self.bomberman.step_frame == 6:
-                        self.bomberman.step_frame = 1
+                self.object_move(self.bombermans[0], 'left', move_step, {1, 3, 4})
+                self.bombermans[0].canvas.clear()
+                self.bombermans[0].draw_bomberman("images/bomberman/bomberman-left-" +
+                                                  str(self.bombermans[0].step_frame) + ".png")
+                if self.bombermans[0].distance >= animation_change_distance:
+                    self.bombermans[0].distance = 0
+                    self.bombermans[0].step_frame += 1
+                    if self.bombermans[0].step_frame == 6:
+                        self.bombermans[0].step_frame = 1
             elif 'up' in self.keys_pressed:
-                self.object_move(self.bomberman, 'up', move_step, {1, 3, 4})
-                self.bomberman.canvas.clear()
-                self.bomberman.draw_bomberman("images/bomberman/bomberman-up-" +
-                                              str(self.bomberman.step_frame) + ".png")
-                if self.bomberman.distance >= animation_change_distance:
-                    self.bomberman.distance = 0
-                    self.bomberman.step_frame += 1
-                    if self.bomberman.step_frame == 6:
-                        self.bomberman.step_frame = 1
+                self.object_move(self.bombermans[0], 'up', move_step, {1, 3, 4})
+                self.bombermans[0].canvas.clear()
+                self.bombermans[0].draw_bomberman("images/bomberman/bomberman-up-" +
+                                                  str(self.bombermans[0].step_frame) + ".png")
+                if self.bombermans[0].distance >= animation_change_distance:
+                    self.bombermans[0].distance = 0
+                    self.bombermans[0].step_frame += 1
+                    if self.bombermans[0].step_frame == 6:
+                        self.bombermans[0].step_frame = 1
             elif 'down' in self.keys_pressed:
-                self.object_move(self.bomberman, 'down', move_step, {1, 3, 4})
-                self.bomberman.canvas.clear()
-                self.bomberman.draw_bomberman("images/bomberman/bomberman-down-" +
-                                              str(self.bomberman.step_frame) + ".png")
-                if self.bomberman.distance >= animation_change_distance:
-                    self.bomberman.distance = 0
-                    self.bomberman.step_frame += 1
-                    if self.bomberman.step_frame == 6:
-                        self.bomberman.step_frame = 1
+                self.object_move(self.bombermans[0], 'down', move_step, {1, 3, 4})
+                self.bombermans[0].canvas.clear()
+                self.bombermans[0].draw_bomberman("images/bomberman/bomberman-down-" +
+                                                  str(self.bombermans[0].step_frame) + ".png")
+                if self.bombermans[0].distance >= animation_change_distance:
+                    self.bombermans[0].distance = 0
+                    self.bombermans[0].step_frame += 1
+                    if self.bombermans[0].step_frame == 6:
+                        self.bombermans[0].step_frame = 1
+                        
+        if len(self.bombermans) == 2 and self.bombermans[1].status == 'alive':
+            move_step = self.bombermans[1].speed * dt
+            self.bombermans[1].distance += move_step
+            animation_change_distance = 60
+
+            if 'd' in self.keys_pressed:
+                self.object_move(self.bombermans[1], 'right', move_step, {1, 3, 4})
+                self.bombermans[1].canvas.clear()
+                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-right-" +
+                                                  str(self.bombermans[1].step_frame) + ".png")
+                if self.bombermans[1].distance >= animation_change_distance:
+                    self.bombermans[1].distance = 0
+                    self.bombermans[1].step_frame += 1
+                    if self.bombermans[1].step_frame == 6:
+                        self.bombermans[1].step_frame = 1
+            elif 'a' in self.keys_pressed:
+                self.object_move(self.bombermans[1], 'left', move_step, {1, 3, 4})
+                self.bombermans[1].canvas.clear()
+                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-left-" +
+                                                  str(self.bombermans[1].step_frame) + ".png")
+                if self.bombermans[1].distance >= animation_change_distance:
+                    self.bombermans[1].distance = 0
+                    self.bombermans[1].step_frame += 1
+                    if self.bombermans[1].step_frame == 6:
+                        self.bombermans[1].step_frame = 1
+            elif 'w' in self.keys_pressed:
+                self.object_move(self.bombermans[1], 'up', move_step, {1, 3, 4})
+                self.bombermans[1].canvas.clear()
+                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-up-" +
+                                                  str(self.bombermans[1].step_frame) + ".png")
+                if self.bombermans[1].distance >= animation_change_distance:
+                    self.bombermans[1].distance = 0
+                    self.bombermans[1].step_frame += 1
+                    if self.bombermans[1].step_frame == 6:
+                        self.bombermans[1].step_frame = 1
+            elif 's' in self.keys_pressed:
+                self.object_move(self.bombermans[1], 'down', move_step, {1, 3, 4})
+                self.bombermans[1].canvas.clear()
+                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-down-" +
+                                                  str(self.bombermans[1].step_frame) + ".png")
+                if self.bombermans[1].distance >= animation_change_distance:
+                    self.bombermans[1].distance = 0
+                    self.bombermans[1].step_frame += 1
+                    if self.bombermans[1].step_frame == 6:
+                        self.bombermans[1].step_frame = 1
 
     def object_move(self, obj, direction: str, move_step: float, obst: set):
         cur_width, cur_height = obj.get_size()

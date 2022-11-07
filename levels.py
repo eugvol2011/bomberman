@@ -48,7 +48,7 @@ field0 = [
 ]
 
 
-def gen_level(woodenboxes=30, monsters=5):
+def gen_level(woodenboxes=10, monsters=2):
     # generate wooden boxes
     list_of_zeroes = []
     for j in range(2, len(field) - 1 - 2):

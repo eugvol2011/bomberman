@@ -147,12 +147,13 @@ class Monster(Widget):
                     self.y -= step
             self.monster.pos = (self.x, self.y)
 
-            bx, by = self.game.bomberman.x, self.game.bomberman.y
-            bw, bh = self.game.bomberman.get_size()
+            for bomberman in self.game.bombermans:
+                bx, by = bomberman.x, bomberman.y
+                bw, bh = bomberman.get_size()
 
-            if (self.game.bomberman.status == 'alive' and
-                    in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive)):
-                self.game.bomberman.die()
+                if (bomberman.status == 'alive' and
+                        in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive)):
+                    bomberman.die()
 
     def die(self):
         if self.monster_move_interval is not None:

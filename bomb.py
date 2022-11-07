@@ -73,7 +73,11 @@ class Fire(Widget):
                         break
             # -- trigger bombs in nearby
             if fire_xy_pos[2] == 3:
-                for bomb in self.game.bomberman.bombs:
+                all_bombs = set()
+                for bomberman in self.game.bombermans:
+                    for bomb in bomberman.bombs:
+                        all_bombs.add(bomb)
+                for bomb in all_bombs:
                     if bomb.xy_pos == fire_xy_pos[0:2]:
                         bomb.trigger_interval.cancel()
                         bomb.explode(0)
@@ -97,11 +101,12 @@ class Fire(Widget):
                 self.game.monsters.append(monster)
         # ---
         # --- kill bomberman
-        bx, by = self.game.bomberman.x, self.game.bomberman.y
-        bw, bh = self.game.bomberman.get_size()
-        if self.game.bomberman.status == 'alive' and in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh,
-                                                                self.sensitive):
-            self.game.bomberman.die()
+        for bomberman in self.game.bombermans:
+            bx, by = bomberman.x, bomberman.y
+            bw, bh = bomberman.get_size()
+            if bomberman.status == 'alive' and in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh,
+                                                          self.sensitive):
+                bomberman.die()
         # ---
         # -- kill monster
         for monster in self.game.monsters:
@@ -114,19 +119,21 @@ class Fire(Widget):
         if self.animation_frame == 8:
             self.fire_animation_interval.cancel()
             self.game.remove_widget(self.bomb)
-            self.game.bomberman.bombs.discard(self.bomb)
-            del self.bomb
+            self.bomb.owner.bombs.discard(self.bomb)
+            #self.game.bomberman.bombs.discard(self.bomb)
             self.game.remove_widget(self)
-            if self.game.bomberman.wait_out_of_bomb_interval is not None and self.type == 'center':
-                self.game.bomberman.wait_out_of_bomb_interval.cancel()
-                self.game.bomberman.wait_out_of_bomb_interval = None
+            if self.bomb.owner.wait_out_of_bomb_interval is not None and self.type == 'center':
+                self.bomb.owner.wait_out_of_bomb_interval.cancel()
+                self.bomb.owner.wait_out_of_bomb_interval = None
+            del self.bomb
             del self
 
 
 class Bomb(Widget):
-    def __init__(self, game, delay, power, x, y, **kwargs):
+    def __init__(self, game, delay, power, x, y, owner, **kwargs):
         super().__init__(**kwargs)
         self.game = game
+        self.owner = owner
         self.center_pos = None
         self.explosion_animation_interval = None
         self.x = x

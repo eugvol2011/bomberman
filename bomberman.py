@@ -9,11 +9,11 @@ from kivy.graphics import Rectangle
 
 class Bomberman(Widget):
 
-    def __init__(self, game, **kwargs):
+    def __init__(self, game, x, y, **kwargs):
         super().__init__(**kwargs)
-        self.x = 0
-        self.y = 0
-        self.initial_x, self.initial_y = None, None
+        self.x = x
+        self.y = y
+        self.initial_x, self.initial_y = x, y
         self.source = "images/bomberman/bomberman-right-1.png"
         self.new_bomb_pos = None
         self.wait_out_of_bomb_interval = None
@@ -23,7 +23,7 @@ class Bomberman(Widget):
         self.speed = 300
         self.initial_size_ratio = .8
         self.size_ratio = self.initial_size_ratio
-        self.max_bombs = 1
+        self.max_bombs = 2
         self.power = 2
         self.bomb_delay = 3
         self.bombs = set()
@@ -35,14 +35,7 @@ class Bomberman(Widget):
         self.draw_bomberman()
 
     def draw_bomberman(self, source=None):
-        if source is None:
-            for row in range(0, len(self.game.level)):
-                for col in range(0, len(self.game.level[row])):
-                    if self.game.level[row][col] == 2:
-                        self.x = self.game.get_xy_by_position(col + 1, row + 1)[0]
-                        self.y = self.game.get_xy_by_position(col + 1, row + 1)[1]
-                        self.initial_x, self.initial_y = self.x, self.y
-        else:
+        if source is not None:
             self.source = source
         with self.canvas:
             self.bomber = Rectangle(pos=(self.x, self.y),
@@ -68,7 +61,7 @@ class Bomberman(Widget):
             if bomber_center_pos[2] != 3:
                 new_bomb_xy = self.game.get_xy_by_position(bomber_center_pos[0], bomber_center_pos[1])
                 self.new_bomb_pos = bomber_center_pos
-                new_bomb = Bomb(self.game, delay, power, new_bomb_xy[0], new_bomb_xy[1])
+                new_bomb = Bomb(self.game, delay, power, new_bomb_xy[0], new_bomb_xy[1], self)
                 self.game.remove_widget(self)
                 self.game.add_widget(new_bomb)
                 self.game.add_widget(self)
@@ -104,13 +97,17 @@ class Bomberman(Widget):
             self.canvas.clear()
             self.lives -= 1
             if self.lives == 0:
-                with self.canvas:
-                    w, h = self.game.width / 3, self.game.height / 3
-                    x, y = self.game.width / 2 - w / 2, self.game.height / 2 - h / 2
-                    Rectangle(pos=(x, y),
-                              size=(w, h),
-                              source='images/gameover.png')
-                self.opacity = 1
+                if len(self.game.bombermans) == 1:
+                    with self.canvas:
+                        w, h = self.game.width / 3, self.game.height / 3
+                        x, y = self.game.width / 2 - w / 2, self.game.height / 2 - h / 2
+                        Rectangle(pos=(x, y),
+                                  size=(w, h),
+                                  source='images/gameover.png')
+                    self.opacity = 1
+                else:
+                    self.game.bombermans.remove(self)
+                    del self
             else:
                 if self.has_key:
                     self.has_key = False

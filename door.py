@@ -26,18 +26,20 @@ class Door(Widget):
                                   source=self.source)
 
     def contact(self, dt):
-        bx, by = self.game.bomberman.x, self.game.bomberman.y
-        bw, bh = self.game.bomberman.get_size()
-        if (self.game.bomberman.status == 'alive' and
-                in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive) and
-                self.game.bomberman.has_key):
-            self.check_contact_interval.cancel()
-            self.game.bomberman.status = 'dead'
-            with self.canvas:
-                w, h = self.game.width / 4, self.game.height / 3
-                Rectangle(pos=(self.game.width / 2 - w, self.game.height / 2 - h / 2),
-                          size=(w, h),
-                          source='images/win1.png')
-                Rectangle(pos=(self.game.width / 2, self.game.height / 2 - h / 2),
-                          size=(w, h),
-                          source='images/win2.png')
+        for bomberman in self.game.bombermans:
+            bx, by = bomberman.x, bomberman.y
+            bw, bh = bomberman.get_size()
+            if (bomberman.status == 'alive' and
+                    in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive) and
+                    bomberman.has_key):
+                self.check_contact_interval.cancel()
+                for all_bombermans in self.game.bombermans:
+                    all_bombermans.status = 'dead'
+                with self.canvas:
+                    w, h = self.game.width / 4, self.game.height / 3
+                    Rectangle(pos=(self.game.width / 2 - w, self.game.height / 2 - h / 2),
+                              size=(w, h),
+                              source='images/win1.png')
+                    Rectangle(pos=(self.game.width / 2, self.game.height / 2 - h / 2),
+                              size=(w, h),
+                              source='images/win2.png')

@@ -40,28 +40,29 @@ class Secret(Widget):
                                     source=self.source)
 
     def contact(self, dt):
-        bx, by = self.game.bomberman.x, self.game.bomberman.y
-        bw, bh = self.game.bomberman.get_size()
-        if (self.first_contact and
-                not in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive)):
-            self.first_contact = False
-        if (self.game.bomberman.status == 'alive' and
-                not self.first_contact and
-                in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive)):
-            self.first_contact = True
-            self.canvas.clear()
-            self.game.remove_widget(self)
-            self.game.list_of_secrets.discard(self)
-            if self.secret_type == 'key':
-                self.game.bomberman.has_key = True
-            elif self.secret_type == 'heart':
-                self.game.bomberman.lives += 1
-            elif self.secret_type == 'bomb':
-                self.game.bomberman.max_bombs += 1
-            elif self.secret_type == 'power':
-                self.game.bomberman.power += 1
-            self.check_contact_interval.cancel()
-            del self
+        for bomberman in self.game.bombermans:
+            bx, by = bomberman.x, bomberman.y
+            bw, bh = bomberman.get_size()
+            if (self.first_contact and
+                    not in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive)):
+                self.first_contact = False
+            if (bomberman.status == 'alive' and
+                    not self.first_contact and in_contact(self.x, self.y, self.w, self.h, bx, by, bw, bh, self.sensitive)):
+                self.first_contact = True
+                self.canvas.clear()
+                self.game.remove_widget(self)
+                self.game.list_of_secrets.discard(self)
+                if self.secret_type == 'key':
+                    bomberman.has_key = True
+                elif self.secret_type == 'heart':
+                    bomberman.lives += 1
+                elif self.secret_type == 'bomb':
+                    bomberman.max_bombs += 1
+                elif self.secret_type == 'power':
+                    bomberman.power += 1
+                self.check_contact_interval.cancel()
+                del self
+                break
 
     def die(self):
         if self.secret_type != 'key':
