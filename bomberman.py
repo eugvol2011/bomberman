@@ -9,12 +9,16 @@ from kivy.graphics import Rectangle
 
 class Bomberman(Widget):
 
-    def __init__(self, game, x, y, **kwargs):
+    def __init__(self, game, x, y, player=0, **kwargs):
         super().__init__(**kwargs)
         self.x = x
         self.y = y
         self.initial_x, self.initial_y = x, y
-        self.source = "images/bomberman/bomberman-right-1.png"
+        self.player = player
+        if self.player == 0:
+            self.source = "images/bomberman/bomberman-right-1.png"
+        else:
+            self.source = "images/bomberman/player2/bomberman-left-1.png"
         self.new_bomb_pos = None
         self.wait_out_of_bomb_interval = None
         self.death_animation_interval = None
@@ -115,6 +119,9 @@ class Bomberman(Widget):
                     self.game.add_widget(secret)
                 self.size_ratio = self.initial_size_ratio
                 self.x, self.y = self.initial_x, self.initial_y
-                self.draw_bomberman("images/bomberman/bomberman-right-1.png")
+                if self.player == 0:
+                    self.draw_bomberman("images/bomberman/bomberman-right-1.png")
+                else:
+                    self.draw_bomberman("images/bomberman/player2/bomberman-left-1.png")
                 self.opacity = 1
                 self.status = 'alive'

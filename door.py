@@ -37,9 +37,15 @@ class Door(Widget):
                     all_bombermans.status = 'dead'
                 with self.canvas:
                     w, h = self.game.width / 4, self.game.height / 3
+                    if bomberman.player == 0:
+                        source1 = 'images/win1.png'
+                        source2 = 'images/win2.png'
+                    else:
+                        source1 = 'images/win2.png'
+                        source2 = 'images/win3.png'
                     Rectangle(pos=(self.game.width / 2 - w, self.game.height / 2 - h / 2),
                               size=(w, h),
-                              source='images/win1.png')
+                              source=source1)
                     Rectangle(pos=(self.game.width / 2, self.game.height / 2 - h / 2),
                               size=(w, h),
-                              source='images/win2.png')
+                              source=source2)

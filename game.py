@@ -22,7 +22,7 @@ class Game(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.level = gen_level()
-        self.players = 1
+        self.players = 2
         if self.players == 2:
             self.level[15][23] = 2
         self.field_width_ratio = 1
@@ -40,8 +40,9 @@ class Game(FloatLayout):
             self.add_widget(woodenbox)
             self.wooden_boxes.append(woodenbox)
         self.bombermans = []
-        for xy in self.get_list_of_xy_by_value(2):
-            bomberman = Bomberman(self, xy[0], xy[1])
+        list_of_bomberman_xy = self.get_list_of_xy_by_value(2)
+        for xy in list_of_bomberman_xy:
+            bomberman = Bomberman(self, xy[0], xy[1], list_of_bomberman_xy.index(xy))
             self.bombermans.append(bomberman)
             self.add_widget(bomberman)
         Clock.schedule_interval(self.bomber_move, 0)
@@ -83,7 +84,7 @@ class Game(FloatLayout):
             self.keys_pressed.remove(text)
         if text == 'spacebar' and self.bombermans[0].status == 'alive':
             self.bombermans[0].put_bomb(self.bombermans[0].bomb_delay, self.bombermans[0].power)
-        if text == 'q' and len(self.bombermans) == 2 and self.bombermans[1].status == 'alive':
+        if text == 'lctrl' and len(self.bombermans) == 2 and self.bombermans[1].status == 'alive':
             self.bombermans[1].put_bomb(self.bombermans[1].bomb_delay, self.bombermans[1].power)
         self.bombermans[0].distance = 0
         if len(self.bombermans) == 2:
@@ -147,7 +148,7 @@ class Game(FloatLayout):
             if 'd' in self.keys_pressed:
                 self.object_move(self.bombermans[1], 'right', move_step, {1, 3, 4})
                 self.bombermans[1].canvas.clear()
-                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-right-" +
+                self.bombermans[1].draw_bomberman("images/bomberman/player2/bomberman-right-" +
                                                   str(self.bombermans[1].step_frame) + ".png")
                 if self.bombermans[1].distance >= animation_change_distance:
                     self.bombermans[1].distance = 0
@@ -157,7 +158,7 @@ class Game(FloatLayout):
             elif 'a' in self.keys_pressed:
                 self.object_move(self.bombermans[1], 'left', move_step, {1, 3, 4})
                 self.bombermans[1].canvas.clear()
-                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-left-" +
+                self.bombermans[1].draw_bomberman("images/bomberman/player2/bomberman-left-" +
                                                   str(self.bombermans[1].step_frame) + ".png")
                 if self.bombermans[1].distance >= animation_change_distance:
                     self.bombermans[1].distance = 0
@@ -167,7 +168,7 @@ class Game(FloatLayout):
             elif 'w' in self.keys_pressed:
                 self.object_move(self.bombermans[1], 'up', move_step, {1, 3, 4})
                 self.bombermans[1].canvas.clear()
-                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-up-" +
+                self.bombermans[1].draw_bomberman("images/bomberman/player2/bomberman-up-" +
                                                   str(self.bombermans[1].step_frame) + ".png")
                 if self.bombermans[1].distance >= animation_change_distance:
                     self.bombermans[1].distance = 0
@@ -177,7 +178,7 @@ class Game(FloatLayout):
             elif 's' in self.keys_pressed:
                 self.object_move(self.bombermans[1], 'down', move_step, {1, 3, 4})
                 self.bombermans[1].canvas.clear()
-                self.bombermans[1].draw_bomberman("images/bomberman/bomberman-down-" +
+                self.bombermans[1].draw_bomberman("images/bomberman/player2/bomberman-down-" +
                                                   str(self.bombermans[1].step_frame) + ".png")
                 if self.bombermans[1].distance >= animation_change_distance:
                     self.bombermans[1].distance = 0
