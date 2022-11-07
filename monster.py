@@ -17,7 +17,7 @@ class Monster(Widget):
         self.sensitive = 15
         self.x, self.y = x, y
         self.w, self.h = self.game.cell_width, self.game.cell_height
-        monster_type = random.randint(1, 4)
+        monster_type = random.randint(1, 5)
         match monster_type:
             case 1:
                 self.source = "images/monsters/shit1.png"
@@ -27,6 +27,8 @@ class Monster(Widget):
                 self.source = "images/monsters/sirenhead.png"
             case 4:
                 self.source = "images/monsters/train.png"
+            case 5:
+                self.source = "images/monsters/cat.png"
         self.current_direction = None
         self.distance_passed = 0
         self.x_pos = self.game.get_position_by_xy(self.x + self.w / 2,
