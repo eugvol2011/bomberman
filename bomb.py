@@ -120,7 +120,6 @@ class Fire(Widget):
             self.fire_animation_interval.cancel()
             self.game.remove_widget(self.bomb)
             self.bomb.owner.bombs.discard(self.bomb)
-            #self.game.bomberman.bombs.discard(self.bomb)
             self.game.remove_widget(self)
             if self.bomb.owner.wait_out_of_bomb_interval is not None and self.type == 'center':
                 self.bomb.owner.wait_out_of_bomb_interval.cancel()
