@@ -19,10 +19,13 @@ Config.set('graphics', 'fullscreen', False)
 
 
 class Game(FloatLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, menu, players, max_bombs, power, delay, monsters,
+                 monster_speed, lives, bomberman_speed, woodenboxes, **kwargs):
         super().__init__(**kwargs)
-        self.level = gen_level()
-        self.players = 2
+        self.menu = menu
+        self.gameover_win_screen = False
+        self.level = gen_level(monsters=monsters, woodenboxes=woodenboxes)
+        self.players = players
         if self.players == 2:
             self.level[15][23] = 2
         self.field_width_ratio = 1
@@ -43,6 +46,11 @@ class Game(FloatLayout):
         list_of_bomberman_xy = self.get_list_of_xy_by_value(2)
         for xy in list_of_bomberman_xy:
             bomberman = Bomberman(self, xy[0], xy[1], list_of_bomberman_xy.index(xy))
+            bomberman.max_bombs = max_bombs
+            bomberman.power = power
+            bomberman.bomb_delay = delay
+            bomberman.lives = lives
+            bomberman.speed = bomberman_speed
             self.bombermans.append(bomberman)
             self.add_widget(bomberman)
         Clock.schedule_interval(self.bomber_move, 0)
@@ -50,6 +58,7 @@ class Game(FloatLayout):
         self.monsters = []
         for xy in self.get_list_of_xy_by_value(5):
             monster = Monster(self, xy[0], xy[1])
+            monster.speed = monster_speed
             self.add_widget(monster)
             self.monsters.append(monster)
         secrets = ['heart', 'bomb', 'power', 'key', 'bomb', 'door']
@@ -89,6 +98,12 @@ class Game(FloatLayout):
         self.bombermans[0].distance = 0
         if len(self.bombermans) == 2:
             self.bombermans[1].distance = 0
+        if text == 'enter' and self.gameover_win_screen:
+            self.menu.current = 'main menu'
+            all_screens = self.menu.screens
+            all_screens.remove(self.menu.screens[1])
+            self.menu.keyboard_init()
+            del self
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
         self.keys_pressed.add(keycode[1])

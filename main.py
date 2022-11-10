@@ -1,6 +1,6 @@
 from kivy.app import App
 from kivy.core.window import Window
-from game import Game
+from menu import Menu
 
 
 class BombermanApp(App):
@@ -8,4 +8,5 @@ class BombermanApp(App):
 
 
 Window.maximize()
-BombermanApp().run()
+if __name__ == '__main__':
+    BombermanApp().run()

@@ -5,6 +5,7 @@ from woodenbox import Secret
 
 from kivy.uix.widget import Widget
 from kivy.graphics import Rectangle
+import gc
 
 
 class Bomberman(Widget):
@@ -101,7 +102,10 @@ class Bomberman(Widget):
             self.canvas.clear()
             self.lives -= 1
             if self.lives == 0:
-                if len(self.game.bombermans) == 1:
+                if ((self.game.players == 2 and
+                     self.game.bombermans[0].status != 'alive' and
+                     self.game.bombermans[1].status != 'alive') or
+                        self.game.players == 1):
                     with self.canvas:
                         w, h = self.game.width / 3, self.game.height / 3
                         x, y = self.game.width / 2 - w / 2, self.game.height / 2 - h / 2
@@ -109,9 +113,7 @@ class Bomberman(Widget):
                                   size=(w, h),
                                   source='images/gameover.png')
                     self.opacity = 1
-                else:
-                    self.game.bombermans.remove(self)
-                    del self
+                    self.game.gameover_win_screen = True
             else:
                 if self.has_key:
                     self.has_key = False
