@@ -49,3 +49,4 @@ class Door(Widget):
                     Rectangle(pos=(self.game.width / 2, self.game.height / 2 - h / 2),
                               size=(w, h),
                               source=source2)
+                self.game.gameover_win_screen = True
