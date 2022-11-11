@@ -1,0 +1,7 @@
+('c:\\users\\ruuevolk\\appdata\\local\\programs\\python\\python310\\lib\\site-packages\\pyparsing-3.0.9-py3.10.egg',
+ None,
+ {'*.pyd', 'EGG-INFO', '*.py', '*.pyc', '*.pyw', '*.cp310-win_amd64.pyd'},
+ 'DATA',
+ [('pyparsing\\py.typed',
+   'c:\\users\\ruuevolk\\appdata\\local\\programs\\python\\python310\\lib\\site-packages\\pyparsing-3.0.9-py3.10.egg\\pyparsing\\py.typed',
+   'DATA')])

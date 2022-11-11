@@ -9,6 +9,6 @@ class BombermanApp(App):
     pass
 
 
-#Window.maximize()
+Window.maximize()
 if __name__ == '__main__':
     BombermanApp().run()
